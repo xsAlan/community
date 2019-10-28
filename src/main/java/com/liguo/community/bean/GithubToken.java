@@ -2,6 +2,7 @@ package com.liguo.community.bean;
 
 /**
  * Created by dogbro on 2019-10-24 19:30
+ * @Deprecated
  */
 public class GithubToken {
 

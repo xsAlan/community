@@ -3,9 +3,11 @@ package com.liguo.community.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.liguo.community.bean.AccessTokenDto;
 import com.liguo.community.bean.GithubToken;
 import com.liguo.community.bean.GithubUser;
 import com.liguo.community.utils.HttpClientUtils;
+import okhttp3.*;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
@@ -25,7 +27,69 @@ import java.io.IOException;
 public class OauthService {
 
 
+    private String GITHUB_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
 
+    /**
+     * Get GitHub access token
+     * @param accessTokenDto
+     * @return
+     */
+    public String getAccessToken(AccessTokenDto accessTokenDto){
+        MediaType mediaType = MediaType.get("application/json; charset=utf-8");
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = RequestBody.create(mediaType, JSON.toJSONString(accessTokenDto));
+        Request request = new Request.Builder()
+                .url(GITHUB_ACCESS_TOKEN_URL)
+                .post(body)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            //access_token=e72e16c7e42f292c6912e7710c838347ae178b4a&token_type=bearer
+            String repsonseStr = response.body().string();
+            String token = repsonseStr.substring(repsonseStr.indexOf("=") + 1, repsonseStr.indexOf("&"));
+            System.out.println("github token : "+ token);
+            return token;
+        } catch (IOException e) {
+        }
+        return "";
+    }
+
+
+    /**
+     * Get gitub user details via token
+     * @param token
+     * @return
+     */
+    public GithubUser getGihubUser(String token){
+        if(token == null || token.length() == 0){
+            return  null;
+        }
+        String url = "https://api.github.com/user?access_token=" + token;
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            GithubUser githubUser = JSON.parseObject(response.body().string(), GithubUser.class);
+            return githubUser;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+
+    }
+
+    /**
+     * old version
+     * @param clientId
+     * @param clientSecret
+     * @param code
+     * @return
+     */
+    @Deprecated
     public GithubUser loginAndRetrieveUserInfo(String clientId, String clientSecret, String code){
         HttpGet userGet = null;
         GithubUser githubUser = null;

@@ -24,6 +24,7 @@ public class HelloController {
         return "index";
     }
 
+    @Deprecated
     @GetMapping("/oauth/redirect")
     public ModelAndView oauth(String code, Model model){
         String clientId = "36cb4ca807a322ad365b";
