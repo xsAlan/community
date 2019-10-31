@@ -1,41 +1,51 @@
 package com.liguo.community.controller;
 
-import com.liguo.community.bean.GithubUser;
+import com.liguo.community.mapper.UserMapper;
+import com.liguo.community.model.User;
 import com.liguo.community.service.OauthService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by dogbro on 2019-10-24 10:42
  */
 @Controller
+@Slf4j
 public class HelloController {
 
     @Autowired
-    private OauthService oauthService;
+    private UserMapper userMapper;
 
-    @GetMapping("/hello")
-    public String hello(@RequestParam(name = "name", required = false) String name, Model model){
+    @GetMapping("/")
+    public String hello(@RequestParam(name = "name", required = false) String name,
+                        Model model,
+                        HttpServletRequest request,
+                        HttpServletResponse response){
         model.addAttribute("name", name);
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null && cookies.length > 0){
+            for (Cookie cookie : cookies){
+                //github登录鉴权成功
+                if(cookie.getName().equals("token")){
+                    String token = cookie.getValue();
+                    User user = userMapper.getByToken(token);
+                    log.info("token:{}, user：{}", token, user.toString() );
+                    request.getSession().setAttribute("user", user );
+                    return "index";
+                }
+            }
+        }
         return "index";
     }
 
-    @Deprecated
-    @GetMapping("/oauth/redirect")
-    public ModelAndView oauth(String code, Model model){
-        String clientId = "36cb4ca807a322ad365b";
-        String clientSecret = "7a55d04abd9a4fb6242e68fb0f054cfd68535f31";
-        GithubUser githubUser = oauthService.loginAndRetrieveUserInfo(clientId, clientSecret, code);
-        if(githubUser  != null){
-            model.addAttribute("name", githubUser.getLogin());
-        }
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("name", githubUser.getLogin());
-        mv.setViewName("index");
-        return mv;
-    }
+
 }

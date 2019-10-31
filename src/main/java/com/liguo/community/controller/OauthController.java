@@ -1,7 +1,9 @@
 package com.liguo.community.controller;
 
-import com.liguo.community.bean.AccessTokenDto;
-import com.liguo.community.bean.GithubUser;
+import com.liguo.community.dto.AccessTokenDto;
+import com.liguo.community.dto.GithubUser;
+import com.liguo.community.mapper.UserMapper;
+import com.liguo.community.model.User;
 import com.liguo.community.service.OauthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class OauthController {
@@ -22,15 +26,22 @@ public class OauthController {
     @Autowired
     private OauthService oauthService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
-                           HttpServletRequest request){
+                           HttpServletRequest request,
+                           HttpServletResponse response){
        String accessToken =  oauthService.getAccessToken(new AccessTokenDto(clientId, clientSecret, code));
-       GithubUser githubUser = oauthService.getGihubUser(accessToken);
+       GithubUser githubUser = oauthService.getGithubUser(accessToken);
        if(githubUser != null){
-           request.getSession().setAttribute("user", githubUser);
+           User user = githubUser.toUser();
+           userMapper.addUser(user);
+//           request.getSession().setAttribute("user", user);
+           //github登录成功之后返回用户token，重定向到/ （HelloController）
+           response.addCookie(new Cookie("token", user.getToken()));
        }
-        System.out.println(githubUser.toString());
         return "redirect:/";
 
     }
