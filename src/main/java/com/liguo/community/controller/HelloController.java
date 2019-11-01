@@ -3,6 +3,8 @@ package com.liguo.community.controller;
 import com.liguo.community.mapper.UserMapper;
 import com.liguo.community.model.User;
 import com.liguo.community.service.OauthService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,13 +22,15 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @Slf4j
+@Api("首页")
 public class HelloController {
 
     @Autowired
     private UserMapper userMapper;
 
     @GetMapping("/")
-    public String hello(@RequestParam(name = "name", required = false) String name,
+    @ApiOperation(value = "首页")
+    public String index(@RequestParam(name = "name", required = false) String name,
                         Model model,
                         HttpServletRequest request,
                         HttpServletResponse response){
