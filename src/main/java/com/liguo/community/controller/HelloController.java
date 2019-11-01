@@ -38,6 +38,9 @@ public class HelloController {
                 if(cookie.getName().equals("token")){
                     String token = cookie.getValue();
                     User user = userMapper.getByToken(token);
+                    if(user == null){
+                        return "index";
+                    }
                     log.info("token:{}, user：{}", token, user.toString() );
                     request.getSession().setAttribute("user", user );
                     return "index";

@@ -17,10 +17,10 @@ public interface UserMapper {
             @Result(property = "name", column = "name"),
             @Result(property = "accountId", column = "account_id"),
             @Result(property = "token", column = "token"),
-//            @Result(property = "avatarUrl", column = "avatar_url"),
+            @Result(property = "avatarUrl", column = "avatar_url"),
             @Result(property = "gmtCreateTime", column = "gmt_create_time"),
             @Result(property = "gmtUpdateTime", column = "gmt_update_time"),
     })
-    @Select("select id, name, account_id, token, gmt_create_time, gmt_update_time from user where token = #{token}")
+    @Select("select id, name, account_id, token, avatar_url, gmt_create_time, gmt_update_time from user where token = #{token}")
     User getByToken(String token);
 }
