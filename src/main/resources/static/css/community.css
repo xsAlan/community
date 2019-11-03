@@ -1,0 +1,16 @@
+body{
+    background: #efefef;
+}
+.publish-area{
+    margin-right: 30px;
+    margin-left: 30px;
+}
+
+.btn-publish{
+    float: right;
+}
+
+.faqi{
+    color: #333;
+    font-size: 20px;
+}
