@@ -23,6 +23,6 @@ public class Question {
         this.title = title;
         this.description = description;
         this.tag = tag;
-        this.creator = creator;
+//        this.creator = creator;
     }
 }

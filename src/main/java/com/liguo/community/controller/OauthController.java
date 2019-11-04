@@ -32,6 +32,15 @@ public class OauthController {
     @Autowired
     private UserMapper userMapper;
 
+    /**
+     * 1> github登录获取用户信息成功之后，保存用户信息到数据库，并且手动创建并返回token(UUID)，
+     * 2> 重定向到主页 "/"
+     * 3> 主页 index方法中根据request里面的token查询数据库校验用户合法性，并且写回session到客户端
+     * @param code
+     * @param request
+     * @param response
+     * @return
+     */
     @GetMapping("/callback")
     @ApiOperation("Github鉴权回调")
     public String callback(@RequestParam(name = "code") String code,

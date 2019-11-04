@@ -1,9 +1,13 @@
 body{
     background: #efefef;
 }
-.publish-area{
+.nav{
+    /*background: #499ef3;*/
+}
+.publish-area, .question-list-area{
     margin-right: 30px;
     margin-left: 30px;
+    background: white;
 }
 
 .btn-publish{
