@@ -18,3 +18,7 @@ body{
     color: #333;
     font-size: 20px;
 }
+.avatar{
+    height: 30px;
+    width: 30px;
+}
